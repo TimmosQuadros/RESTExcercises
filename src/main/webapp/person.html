@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<!--
+To change this license header, choose License Headers in Project Properties.
+To change this template file, choose Tools | Templates
+and open the template in the editor.
+-->
+<html>
+    <head>
+        <title>Person</title>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <script src="https://code.jquery.com/jquery-3.1.0.min.js"></script>
+        <link href="stylePerson.css" rel="stylesheet" type="text/css"/>
+        <script>
+            var edit = false;
+            $(document).ready(function ()
+            {
+
+
+
+                $("#reloadBtn").click(function ()
+                {
+                    ReloadData();
+                });
+
+                ReloadData();
+
+                $("#addPersonBtn").click(function () {
+                    if ($("#addPersonForm").is(":visible")) {
+                        $("#addPersonForm").hide();
+                    } else {
+                        $("#addPersonForm").show();
+                        $("#formTitle").html("Add Person Form");
+                        edit = false;
+                    }
+                    //don't follow the link (optional, seen as the link is just an anchor)
+                    return false;
+                });
+
+                $("#createPerson").click(function ()
+                {
+                    if (!edit) {
+                        addPerson();
+                        $("#Id").val("Id");
+                        $("#FirstName").val("First Name");
+                        $("#LastName").val("Last Name");
+                        $("#Phone").val("Phone");
+                    }else{
+                        editPerson();
+                        $("#Id").val("Id");
+                        $("#FirstName").val("First Name");
+                        $("#LastName").val("Last Name");
+                        $("#Phone").val("Phone");
+                    }
+                });
+
+            });
+
+            function ReloadData() {
+                $.getJSON("http://localhost:8080/Day1_ExercisesREST_JAX-RS/api/person/all", function (result)
+                {
+                    $("#personTable tbody").html("");
+
+                    var rows = "";
+                    $.each(result, function (i, person)
+                    {
+                        var deleteBtn = '<a href="#" class="btndelete" data-personid="' + person.id + '">delete</a>';
+                        var editBtn = '<a href="#" class="btnedit" data-personid="' + person.id + '">edit</a>';
+                        rows += '<tr id="r' + person.id + '"' + '><td>' + person.id + '</td><td>' + person.firstName + '</td><td>' + person.lastName + '</td><td>' + person.phoneNumber + '</td><td>' + deleteBtn + '/' + editBtn + '</td></tr>';
+                    });
+                    $('#personTable tbody').append(rows);
+                    $("table tbody tr td .btndelete").click(function ()
+                    {
+                        var id = $(this).attr("data-personid");
+                        deletePerson(id);
+                    });
+
+                    $("table tbody tr td .btnedit").click(function ()
+                    {
+                        if ($("#addPersonForm").is(":visible")) {
+                            $("#addPersonForm").hide();
+                            edit = false;
+                        } else {
+                            $("#addPersonForm").show();
+                            $("#formTitle").html("Edit Person Form");
+                            edit = true;
+                        }
+                        //don't follow the link (optional, seen as the link is just an anchor)
+                        return false;
+                    });
+                });
+            }
+
+            function addPerson() {
+                var person = '{ firstName: ' + $("#FirstName").val() + ', lastName: ' + $("#LastName").val() + ', phoneNumber: ' + $("#Phone").val() + ' }';
+
+                $.ajax({
+                    url: "http://localhost:8080/Day1_ExercisesREST_JAX-RS/api/person",
+                    type: "POST",
+                    data: person,
+                    dataType: "json",
+                    contentType: "application/json; charset=utf-8",
+                    success: function () {}
+                });
+            }
+
+            function deletePerson(id) {
+                $.ajax({
+                    url: "http://localhost:8080/Day1_ExercisesREST_JAX-RS/api/person/delete/" + id,
+                    type: "DELETE",
+                    data: "",
+                    dataType: "json",
+                    contentType: "application/json; charset=utf-8",
+                    success: function () {}
+                });
+            }
+
+            function editPerson() {
+                var person = '{ id: ' + $("#Id").val() + ', firstName: ' + $("#FirstName").val() + ', lastName: ' + $("#LastName").val() + ', phoneNumber: ' + $("#Phone").val() + ' }';
+                $.ajax({
+                    url: "http://localhost:8080/Day1_ExercisesREST_JAX-RS/api/person",
+                    type: "PUT",
+                    data: person,
+                    dataType: "json",
+                    contentType: "application/json; charset=utf-8",
+                    success: function () {}
+                });
+            }
+
+        </script>
+    </head>
+    <body>
+        <table id="personTable" border="1" cellspacing="1" cellpadding="1">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>First Name</th>
+                    <th>Last Name</th>
+                    <th>Phone</th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+
+            </tbody>
+        </table>
+
+        <input type="button" value="Reload Data" id="reloadBtn" />
+        <input type="button" value="Add New Person" id="addPersonBtn" />
+        <form id="addPersonForm" action="#"><br />
+            <h3 id="formTitle">Add Person Form</h3>
+            <input type="text" id="Id" value="Id" /><br />
+            <input type="text" id="FirstName" value="First Name" /><br />
+            <input type="text" id="LastName" value="Last Name" /><br />
+            <input type="text" id="Phone" value="Phone" /><br />
+            <input type="button" value="submit" id="createPerson" />
+        </form>
+
+    </body>
+</html>

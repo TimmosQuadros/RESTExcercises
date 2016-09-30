@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <link rel="stylesheet" href="style.css" type="text/css"/>
+
+        <title>AJAJ</title>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <script src="https://code.jquery.com/jquery-3.1.0.min.js"></script>
+        <link href="style.css" rel="stylesheet" type="text/css"/>
+        <script>
+            //JQuery
+
+            $(document).ready(function ()
+            {
+
+                var array = [];
+                array.push("I've learned that people will forget what you said, people will forget what you did, but people will never forget how you made them feel.");
+                array.push("A friend is someone who knows all about you and still loves you.");
+                array.push("If you tell the truth, you don't have to remember anything.");
+                array.push("No one can make you feel inferior without your consent.");
+                array.push("don't walk in front of me... I may not follow Don't walk behind me... I may not lead Walk beside me... Just be my friend");
+                array.push("If you want to know what a man's like, take a good look at how he treats his inferiors, not his equals.");
+                array.push("In three words I can sum up everything I've learned about life: it goes on.");
+                array.push("Be the change that you wish to see in the world.");
+                array.push("You only live once, but if you do it right, once is enough.");
+                array.push("A room without books is like a body without a soul.");
+                array.push("Be who you are and say what you feel, because those who mind don't matter, and those who matter don't mind.");
+                array.push("Two things are infinite: the universe and human stupidity; and I'm not sure about the universe.");
+                array.push("Be yourself; everyone else is already taken.");
+                array.push("Don't cry because it's over, smile because it happened.");
+
+
+                QuoteDeleteAll();
+                QuoteAddArray(array);
+                QuoteNew();
+
+                $("#QuoteNew").click(function ()
+                {
+                    QuoteNew();
+                });
+
+                $("#QuoteAdd").click(function ()
+                {
+                    QuoteAdd();
+                });
+
+                $("#QuoteDelete").click(function ()
+                {
+                    QuoteDelete();
+                });
+
+                $("#QuoteUpdate").click(function ()
+                {
+                    QuoteUpdate();
+                });
+
+            });
+
+            function QuoteNew()
+            {
+                $.getJSON("http://localhost:8080/Day1_ExercisesREST_JAX-RS/api/quote/random", function (result)
+                {
+                    $.each(result, function (i, quote)
+                    {
+                        $("#Quote").html("\"" + quote + "\"");
+                    });
+                });
+            }
+
+            function QuoteAdd()
+            {
+                var quote = '{"quote":"' + $("#QuoteAddInput").val() + '"}';
+
+                $.ajax({
+                    url: "http://localhost:8080/Day1_ExercisesREST_JAX-RS/api/quote",
+                    type: "POST",
+                    data: quote,
+                    dataType: "json",
+                    contentType: "application/json; charset=utf-8",
+                    success: function () {}
+                });
+            }
+
+            function QuoteAddArray(array) {
+                for (var i = 0; i < array.length; i++) {
+                    var quote = '{"quote":"' + array[i] + '"}';
+                    $.ajax({
+                        url: "http://localhost:8080/Day1_ExercisesREST_JAX-RS/api/quote",
+                        type: "POST",
+                        data: quote,
+                        dataType: "json",
+                        contentType: "application/json; charset=utf-8",
+                        success: function () {}
+                    });
+                }
+            }
+
+            function QuoteDelete()
+            {
+                $.ajax({
+                    url: "http://localhost:8080/Day1_ExercisesREST_JAX-RS/api/quote/delete/" + $("#QuoteDeleteInput").val(),
+                    type: "DELETE",
+                    data: "",
+                    dataType: "json",
+                    contentType: "application/json; charset=utf-8",
+                    success: function (data,text) {
+                        alert(text);
+                    },
+                    error: function (request, status, error) {
+                        alert(request.responseText);
+                    }
+                });
+            }
+
+            function QuoteDeleteAll()
+            {
+                $.ajax({
+                    url: "http://localhost:8080/Day1_ExercisesREST_JAX-RS/api/quote/delete",
+                    type: "DELETE",
+                    data: "",
+                    dataType: "json",
+                    contentType: "application/json; charset=utf-8",
+                    success: function () {}
+                });
+            }
+
+            function QuoteUpdate()
+            {
+                var quote = '{"quote":"' + $("#QuoteUpdateInput").val() + '"}';
+
+                $.ajax({
+                    url: "http://localhost:8080/Day1_ExercisesREST_JAX-RS/api/quote/" + $("#QuoteUpdateId").val(),
+                    type: "PUT",
+                    data: quote,
+                    dataType: "json",
+                    contentType: "application/json; charset=utf-8",
+                    success: function (data,text) {
+                        alert(text);
+                    },
+                    error: function (request, status, error) {
+                        alert(request.responseText);
+                    }
+                });
+            }
+        </script>
+    </head>
+    <body>
+        <h1>REST Quote</h1>
+        <h2>Quote of today:</h2>
+        <label id="Quote"></label><br /><br />
+        <input id="QuoteNew" type="button" value="Random" /><br />
+        <h2>Add quote</h2>
+        <input id="QuoteAddInput" type="text" value="Enter quote" />
+        <input id="QuoteAdd" type="button" value="Submit" /><br />
+        <h2>Delete quote</h2>
+        <input id="QuoteDeleteInput" type="text" value="Enter id" />
+        <input id="QuoteDelete" type="button" value="Submit" /><br />
+        <h2>Update quote</h2>
+        <input id="QuoteUpdateInput" type="text" value="Enter new qoute" />
+        <input id="QuoteUpdateId" type="text" value="Enter id" />
+        <input id="QuoteUpdate" type="button" value="Submit" /><br />
+    </body>
+</html>

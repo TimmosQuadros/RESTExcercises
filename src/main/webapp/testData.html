@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<!--
+To change this license header, choose License Headers in Project Properties.
+To change this template file, choose Tools | Templates
+and open the template in the editor.
+-->
+<html>
+    <head>
+        <title>TODO supply a title</title>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <script src="https://code.jquery.com/jquery-3.1.0.min.js"></script>
+        <script>
+            
+            $(document).ready(function ()
+            {
+               ReloadData(); 
+            });
+            
+            function ReloadData() {
+                $.getJSON("http://localhost:8080/Day1_ExercisesREST_JAX-RS/api/addresses/header/20/fname,lname,street,city", function (result){
+                   $("#testDataTable tbody").html("");
+                   var rows = "";
+                    $.each(result.persons, function (i, person)
+                    {
+                        rows += '<tr><td>' + person.fname + '</td><td>' + person.lname + '</td><td>' + person.street + '</td><td>' + person.city + '</td></tr>';
+                    });
+                    $('#testDataTable tbody').append(rows);
+                });
+            }
+            
+            
+        </script>
+    </head>
+    <body>
+        <table id="testDataTable" border="1" cellspacing="1" cellpadding="1">
+            <thead>
+                <tr>
+                    <th>First Name</th>
+                    <th>Last Name</th>
+                    <th>Street</th>
+                    <th>City</th>
+                </tr>
+            </thead>
+            <tbody>
+
+            </tbody>
+        </table>
+    </body>
+</html>
